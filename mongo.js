@@ -9,7 +9,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2]
 
-const url = `mongodb+srv://fullstack:${password}>@cluster0.nqtht.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+const url = `mongodb+srv://fullstack:${password}@cluster0.nqtht.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 
 mongoose.connect(url, {
   useNewUrlParser: true,
@@ -32,7 +32,10 @@ const note = new Note({
   important: true,
 })
 
-note.save().then((result) => {
-  console.log('note saved!')
-  mongoose.connection.close()
-})
+note
+  .save()
+  .then((result) => {
+    console.log('note saved!')
+    mongoose.connection.close()
+  })
+  .catch((e) => console.log(e))
