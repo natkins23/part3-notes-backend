@@ -2,8 +2,22 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
+app.use(express.static('build'))
+//To make express show static content, the page index.html and the JavaScript, etc., it fetches, we need a built-in middleware from express called static.
+//whenever express gets an HTTP GET request it will first check if the build directory contains a file corresponding to the request's address. If a correct file is found, express will return it.
+//Now HTTP GET requests to the address www.serversaddress.com/index.html or www.serversaddress.com will show the React frontend. GET requests to the address www.serversaddress.com/api/notes will be handled by the backend's code.
 app.use(cors())
 app.use(express.json())
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
 
 let notes = [
   {
@@ -27,7 +41,7 @@ let notes = [
 ]
 
 app.get('/', (req, res) => {
-  res.json(notes)
+  res.send('<h1>Hello World!</h1>')
 })
 
 app.get('/api/notes', (req, res) => {
@@ -77,6 +91,12 @@ app.delete('/api/notes/:id', (request, response) => {
 
   response.status(204).end()
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
